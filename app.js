@@ -1,3 +1,5 @@
+import { Logouthandler } from "./Firebase.js";
+
 let userFile = document.querySelector('#file');
 let Title = document.querySelector('.title');
 let Description = document.querySelector('.description');
@@ -55,3 +57,10 @@ Addbtn.addEventListener('click',()=>{
 
 })
 
+
+// logoutworking 
+
+let Logoutbtn = document.querySelector('.Logout')
+Logoutbtn.addEventListener('click',()=>{
+    Logouthandler()
+})
