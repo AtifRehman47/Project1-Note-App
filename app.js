@@ -6,11 +6,20 @@ let Description = document.querySelector('.description');
 let Addbtn = document.querySelector('.add');
 
 let Shownotes = document.querySelector('.shownotes');
-let ul = document.querySelector('.ul')
 
-Addbtn.addEventListener('click',()=>{
 
-    if (!Title.value && !Description.value && !userFile.files[0] ) {
+let notes = JSON.parse(localStorage.getItem('notes')) || [];
+
+
+window.addEventListener('DOMContentLoaded', () => {
+    notes.forEach((note) => {
+        createNote(note.title, note.description, note.img);
+    });
+});
+
+Addbtn.addEventListener('click', () => {
+
+    if (!Title.value && !Description.value && !userFile.files[0]) {
         alert('Please enter title, description or select a file')
         return
     }
@@ -22,45 +31,66 @@ Addbtn.addEventListener('click',()=>{
         imgurl = URL.createObjectURL(File);
     }
 
+    
+    notes.push({
+        title: Title.value,
+        description: Description.value,
+        img: imgurl
+    });
+
+    localStorage.setItem('notes', JSON.stringify(notes));
+
+    
+    createNote(Title.value, Description.value, imgurl);
+
+    Title.value = ''
+    Description.value = ''
+    userFile.value = ''
+});
+
+
+
+function createNote(title, description, imgurl) {
+
     let noteDiv = document.createElement('div')
     noteDiv.classList.add('note')
     noteDiv.innerHTML = `
     ${imgurl ? `<img src="${imgurl}">` : ""}
-    <h1>${Title.value}</h1>
-    <p>${Description.value}</p>
+    <h1>${title}</h1>
+    <p>${description}</p>
     <div class="note-buttons">
     <button class='edit'>EditDescription</button>
     <button class='delete'>Delete</button>
     </div>
      `
 
-     Shownotes.appendChild(noteDiv)
+    Shownotes.appendChild(noteDiv)
 
-     Title.value = ''
-     Description.value = ''
-     userFile.value = ''
+    let Delete = noteDiv.querySelector('.delete');
+    Delete.addEventListener('click', () => {
+        noteDiv.remove();
 
-     
-     let Delete = noteDiv.querySelector('.delete');
-     Delete.addEventListener('click',()=>{
-        noteDiv.remove()
-     })
+        
+        notes = notes.filter(n => !(n.title === title && n.description === description));
+        localStorage.setItem('notes', JSON.stringify(notes));
+    });
 
-     let Edit = noteDiv.querySelector('.edit');
-     Edit.addEventListener('click',()=>{
+    let Edit = noteDiv.querySelector('.edit');
+    Edit.addEventListener('click', () => {
         Title.value = noteDiv.querySelector('h1').innerText
         Description.value = noteDiv.querySelector('p').innerText
-        userFile.value = ''
-        userFile.remove()
-     })
-     
 
-})
+        
+        notes = notes.filter(n => !(n.title === title && n.description === description));
+        localStorage.setItem('notes', JSON.stringify(notes));
+
+        noteDiv.remove();
+    });
+}
 
 
 // logoutworking 
-
 let Logoutbtn = document.querySelector('.Logout')
-Logoutbtn.addEventListener('click',()=>{
+Logoutbtn.addEventListener('click', () => {
     Logouthandler()
 })
